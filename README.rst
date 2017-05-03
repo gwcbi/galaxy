@@ -1,7 +1,7 @@
 .. figure:: https://galaxyproject.org/images/galaxy-logos/galaxy_project_logo.jpg
    :alt: Galaxy Logo
 
-This is the `GWU CBI <https://cbi.gwu.edu/>`'s galaxy instance.
+This is the `GWU CBI <https://cbi.gwu.edu/>`__'s galaxy instance.
 The latest information about Galaxy is available via `https://galaxyproject.org/ <https://galaxyproject.org/>`__
 
 .. image:: https://img.shields.io/badge/questions-galaxy%20biostar-blue.svg
