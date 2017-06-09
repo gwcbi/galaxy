@@ -20,7 +20,7 @@
         color: gray;
     }
     .logo {
-        background: center left no-repeat url(${h.url_for('/static/images/galaxyIcon_noText.png')});
+        background: center left no-repeat url(${h.url_for('/static/images/galaxyIcon.png')});
         padding-left: 30px;
     }
     </style>
@@ -30,7 +30,7 @@
     <script type="text/javascript" src="${h.url_for('/static/scripts/libs/jquery/jqtouch.js')}"></script>
     <script type="text/javascript" charset="utf-8">
         $(document).jQTouch( {
-            icon: "${h.url_for('/static/images/galaxyIcon_noText.png')}",
+            icon: "${h.url_for('/static/images/galaxyIcon.png')}",
             slideInSelector: 'ul li a, .row a, a.async'
         });
     </script>

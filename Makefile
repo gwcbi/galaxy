@@ -22,14 +22,14 @@ OPEN_RESOURCE=bash -c 'open $$0 || xdg-open $$0'
 SLIDESHOW_TO_PDF?=bash -c 'docker run --rm -v `pwd`:/cwd astefanutti/decktape /cwd/$$0 /cwd/`dirname $$0`/`basename -s .html $$0`.pdf'
 
 all: help
-	@echo "This makefile is used for building Galaxy's JS client, documentation, and drive the release process. A sensible all target is not implemented."
+	@echo "This makefile is primarily used for building Galaxy's JS client. A sensible all target is not yet implemented."
 
-docs: ## Generate HTML documentation.
-# Run following commands to setup the Python portion of the requirements:
+# Building docs requires sphinx and utilities be installed (see issue 3166) as well as pandoc.
+# Run following commands to setup the Python portion of these requirements:
 #   $ ./scripts/common_startup.sh
 #   $ . .venv/bin/activate
-#   $ pip install -r lib/galaxy/dependencies/dev-requirements.txt
-# You also need to install pandoc separately.
+#   $ pip install sphinx sphinx_rtd_theme lxml recommonmark
+docs: ## generate Sphinx HTML documentation, including API docs
 	$(IN_VENV) $(MAKE) -C doc clean
 	$(IN_VENV) $(MAKE) -C doc html
 

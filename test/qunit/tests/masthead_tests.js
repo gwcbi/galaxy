@@ -21,7 +21,7 @@ define([ "test-app", "layout/masthead"
                 'citation_url'              : 'citation_url',
                 'terms_url'                 : 'terms_url',
                 'logo_url'                  : 'logo_url',
-                'logo_src'                  : '../../../static/images/galaxyIcon_noText.png',
+                'logo_src'                  : '../../../static/images/galaxyIcon.png',
                 'is_admin_user'             : 'is_admin_user',
                 'active_view'               : 'analysis',
                 'ftp_upload_dir'            : 'ftp_upload_dir',

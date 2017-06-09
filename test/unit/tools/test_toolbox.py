@@ -11,7 +11,6 @@ from galaxy import model
 from galaxy.model import tool_shed_install
 from galaxy.model.tool_shed_install import mapping
 from galaxy.tools import ToolBox
-from galaxy.tools.toolbox.cache import ToolCache
 from galaxy.tools.toolbox.lineages.tool_shed import ToolVersionCache
 from galaxy.tools.toolbox.watcher import get_tool_conf_watcher
 from galaxy.webapps.galaxy.config_watchers import ConfigWatchers
@@ -59,7 +58,7 @@ class BaseToolBoxTestCase(  unittest.TestCase, tools_support.UsesApp, tools_supp
         self.reindexed = False
         self.setup_app( mock_model=False )
         install_model = mapping.init( "sqlite:///:memory:", create_tables=True )
-        self.app.tool_cache = ToolCache()
+        self.app.tool_cache = None
         self.app.install_model = install_model
         self.app.reindex_tool_search = self.__reindex
         itp_config = os.path.join(self.test_directory, "integrated_tool_panel.xml")
@@ -433,7 +432,7 @@ class SimplifiedToolBox( ToolBox ):
     def __init__( self, test_case ):
         app = test_case.app
         # Handle app/config stuff needed by toolbox but not by tools.
-        app.tool_cache = ToolCache()
+        app.tool_cache = None
         app.job_config.get_tool_resource_parameters = lambda tool_id: None
         app.config.update_integrated_tool_panel = True
         config_files = test_case.config_files

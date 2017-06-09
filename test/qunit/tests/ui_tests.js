@@ -698,11 +698,11 @@ define([ 'test-app', 'mvc/ui/ui-misc', 'mvc/ui/ui-select-content', 'mvc/ui/ui-dr
                 firstvalue      : 'id0',
                 firstlabel      : 'hid0: name0',
                 firstmultiple   : true,
-                totalmultiple   : 2,
+                totalmultiple   : 1,
                 lastvalue       : 'id2',
                 lastlabel       : 'hid2: name2',
                 lastlength      : 3,
-                lastmultiple    : true });
+                lastmultiple    : false });
 
         select.model.set( 'multiple', false );
         select.model.set( 'type', 'data_collection' );

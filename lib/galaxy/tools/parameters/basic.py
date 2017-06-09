@@ -51,10 +51,6 @@ def contains_workflow_parameter( value, search=False ):
     return False
 
 
-def is_runtime_value( value ):
-    return isinstance( value, RuntimeValue ) or ( isinstance( value, dict ) and value.get( '__class__' ) == 'RuntimeValue' )
-
-
 def parse_dynamic_options( param, input_source ):
     options_elem = input_source.parse_dynamic_options_elem()
     if options_elem is not None:
@@ -137,13 +133,16 @@ class ToolParameter( object, Dictifiable ):
         return value
 
     def value_to_basic( self, value, app, use_security=False ):
-        if is_runtime_value( value ):
+        if isinstance( value, RuntimeValue ):
             return { '__class__': 'RuntimeValue' }
+        elif isinstance( value, dict ):
+            if value.get( '__class__' ) == 'RuntimeValue':
+                return value
         return self.to_json( value, app, use_security )
 
     def value_from_basic( self, value, app, ignore_errors=False ):
         # Handle Runtime and Unvalidated values
-        if is_runtime_value( value ):
+        if isinstance( value, dict ) and value.get( '__class__' ) == 'RuntimeValue':
             return RuntimeValue()
         elif isinstance( value, dict ) and value.get( '__class__' ) == 'UnvalidatedValue':
             return value[ 'value' ]
@@ -156,27 +155,22 @@ class ToolParameter( object, Dictifiable ):
         else:
             return self.to_python( value, app )
 
-    def value_to_display_text( self, value ):
-        if is_runtime_value( value ):
-            return "Not available."
-        return self.to_text( value )
-
-    def to_text( self, value ):
+    def value_to_display_text( self, value, app=None ):
         """
         Convert a value to a text representation suitable for displaying to
         the user
         >>> p = ToolParameter( None, XML( '<param name="_name" />' ) )
-        >>> print p.to_text( None )
+        >>> print p.value_to_display_text( None )
         Not available.
-        >>> print p.to_text( '' )
+        >>> print p.value_to_display_text( '' )
         Empty.
-        >>> print p.to_text( 'text' )
+        >>> print p.value_to_display_text( 'text' )
         text
-        >>> print p.to_text( True )
+        >>> print p.value_to_display_text( True )
         True
-        >>> print p.to_text( False )
+        >>> print p.value_to_display_text( False )
         False
-        >>> print p.to_text( 0 )
+        >>> print p.value_to_display_text( 0 )
         0
         """
         if value is not None:
@@ -812,7 +806,7 @@ class SelectToolParameter( ToolParameter ):
         legal_values = self.get_legal_values( trans, other_values )
         workflow_building_mode = trans.workflow_building_mode
         for context_value in other_values.values():
-            if is_runtime_value( context_value ):
+            if isinstance( context_value, RuntimeValue ):
                 workflow_building_mode = True
                 break
         if len( list( legal_values ) ) == 0 and workflow_building_mode:
@@ -892,7 +886,7 @@ class SelectToolParameter( ToolParameter ):
             value = value[ 0 ]
         return value
 
-    def to_text( self, value ):
+    def value_to_display_text( self, value, app ):
         if not isinstance( value, list ):
             value = [ value ]
         # FIXME: Currently only translating values back to labels if they
@@ -1357,7 +1351,7 @@ class DrillDownSelectToolParameter( SelectToolParameter ):
             initial_values = None
         return initial_values
 
-    def to_text( self, value ):
+    def value_to_display_text( self, value, app ):
         def get_option_display( value, options ):
             for option in options:
                 if value == option['value']:
@@ -1657,7 +1651,7 @@ class DataToolParameter( BaseDataToolParameter ):
             return "None"
         return value.file_name
 
-    def to_text( self, value ):
+    def value_to_display_text( self, value, app ):
         if value and not isinstance( value, list ):
             value = [ value ]
         if value:
@@ -1896,7 +1890,7 @@ class DataCollectionToolParameter( BaseDataToolParameter ):
             # TODO: Handle error states, implement error states ...
         return rval
 
-    def to_text( self, value ):
+    def value_to_display_text( self, value, app ):
         try:
             if isinstance( value, galaxy.model.HistoryDatasetCollectionAssociation ):
                 display_text = "%s: %s" % ( value.hid, value.name )

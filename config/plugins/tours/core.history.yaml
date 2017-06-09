@@ -7,21 +7,21 @@ steps:
     - title: "Upload data"
       element: ".upload-button"
       intro: |
-            At first we upload some data into your Galaxy history.<br>
-            Use this button to upload your data.
+            "At first we upload some data into your Galaxy history.<br>
+            Use this button to upload your data."
       position: "right"
       postclick:
         - ".upload-button"
 
     - title: "Upload your data"
-      element: "#btn-local"
+      element: "button#btn-local"
       intro: "You can upload data from your computer."
       position: "top"
       postclick:
-        - "#btn-new"
+        - "button#btn-new"
 
     - title: "Upload your data"
-      element: "#btn-new"
+      element: "button#btn-new"
       intro: "Copy and paste data directly into Galaxy or include URLs that lead to your data."
       position: "top"
 
@@ -33,13 +33,13 @@ steps:
         https://wiki.galaxyproject.org/Images/GalaxyLogo?action=AttachFile&do=get&target=galaxy_project_logo.jpg
         https://raw.githubusercontent.com/bgruening/galaxytools/adf077b912ddebd97b07b947b855cdd2862ed8ef/tools/statistics/test-data/anderson.tabular
 
-    - title: "Start the upload"
-      element: "#btn-start"
+    - title: "Upload your data"
+      element: "button#btn-start"
       intro: "Upload the data into your Galaxy <b>History</b>."
       position: "top"
       postclick:
-        - "#btn-start"
-        - "#btn-close"
+        - "button#btn-start"
+        - "button#btn-close"
 
     - title: "History"
       element: "#right"
@@ -98,14 +98,14 @@ steps:
       postclick:
         - "#current-history-panel > .controls > .subtitle .toggle-deleted-link"
 
-    - element: "#current-history-panel > ul.list-items > div:nth-child(1) > div.warnings > div > a.undelete-link"
+    - element: "#current-history-panel > ul.list-items > div:nth-child(1) > div.warnings > div > a"
       title: "Undeleting a dataset"
       intro: |
             Galaxy datasets are only marked as deleled and can be recovered by clicking this link.
             Please note that datasets marked as deleted can be purged by your administrator at any time.
       position: "bottom"
       postclick:
-        - "#current-history-panel > ul.list-items > div:nth-child(1) > div.warnings > div > a.undelete-link"
+        - "#current-history-panel > ul.list-items > div:nth-child(1) > div.warnings > div > a"
 
     - element: "#current-history-panel > div.controls > div.title > div"
       title: "Change your History name"
@@ -128,6 +128,13 @@ steps:
       position: "left"
       postclick:
         - "#history-options-button"
+
+    - element: "#history-options-button-menu > li:nth-child(2) > a"
+      title: "History structure"
+      intro: "See the structure of your History by clicking this item."
+      position: "left"
+      postclick:
+        - "#history-options-button-menu > li:nth-child(2) > a"
 
     - title: "Enjoy your Galaxy Histories"
       intro: "Thanks for taking this tour! Happy research with Galaxy!"

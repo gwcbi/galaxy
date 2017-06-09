@@ -34,6 +34,7 @@ from galaxy.tools.actions import DefaultToolAction
 from galaxy.tools.actions.data_manager import DataManagerToolAction
 from galaxy.tools.actions.data_source import DataSourceToolAction
 from galaxy.tools.actions.model_operations import ModelOperationToolAction
+from galaxy.tools.actions.upload import UploadToolAction
 from galaxy.tools.deps import (
     CachedDependencyManager,
     views
@@ -111,16 +112,14 @@ GALAXY_LIB_TOOLS_UNVERSIONED = [
     "Extract genomic DNA 1",
     "aggregate_scores_in_intervals2",
     "Interval_Maf_Merged_Fasta2",
-    "GeneBed_Maf_Fasta2",
     "maf_stats1",
     "Interval2Maf1",
-    "Interval2Maf_pairwise1",
     "MAF_To_Interval1",
     "MAF_filter",
     "MAF_To_Fasta1",
     "MAF_Reverse_Complement_1",
     "MAF_split_blocks_by_species1",
-    "MAF_Limit_To_Species1",
+    "maf_limit_size1",
     "maf_by_block_number1",
     "wiggle2simple1",
     # Converters
@@ -146,15 +145,11 @@ GALAXY_LIB_TOOLS_UNVERSIONED = [
     "cufflinks",
     # Tools improperly migrated to the tool shed (iuc)
     "tabular_to_dbnsfp",
-    # Tools improperly migrated using Galaxy (from shed other)
-    "column_join",
 ]
 # Tools that needed galaxy on the PATH in the past but no longer do along
 # with the version at which they were fixed.
 GALAXY_LIB_TOOLS_VERSIONED = {
     "sam_to_bam": LooseVersion("1.1.3"),
-    "PEsortedSAM2readprofile": LooseVersion("1.1.1"),
-    "fetchflank": LooseVersion("1.0.1"),
 }
 
 
@@ -190,7 +185,7 @@ class ToolBox( BaseGalaxyToolBox ):
     how to construct them, action types, dependency management, etc....
     """
 
-    def __init__( self, config_filenames, tool_root_dir, app ):
+    def __init__( self, config_filenames, tool_root_dir, app, tool_conf_watcher=None ):
         self._reload_count = 0
         self.tool_location_fetcher = ToolLocationFetcher()
         super( ToolBox, self ).__init__(
@@ -248,6 +243,13 @@ class ToolBox( BaseGalaxyToolBox ):
             ToolClass = Tool
         tool = ToolClass( config_file, tool_source, self.app, guid=guid, repository_id=repository_id, **kwds )
         return tool
+
+    def handle_datatypes_changed( self ):
+        """ Refresh upload tools when new datatypes are added. """
+        for tool_id in self._tools_by_id:
+            tool = self._tools_by_id[ tool_id ]
+            if isinstance( tool.tool_action, UploadToolAction ):
+                self.reload_tool_by_id( tool_id )
 
     def get_tool_components( self, tool_id, tool_version=None, get_loaded_tools_by_lineage=False, set_selected=False ):
         """
@@ -436,7 +438,9 @@ class Tool( object, Dictifiable ):
     @property
     def tool_version( self ):
         """Return a ToolVersion if one exists for our id"""
-        return self.app.tool_version_cache.tool_version_by_tool_id.get(self.id)
+        return self.app.install_model.context.query( self.app.install_model.ToolVersion ) \
+                                             .filter( self.app.install_model.ToolVersion.table.c.tool_id == self.id ) \
+                                             .first()
 
     @property
     def tool_versions( self ):
@@ -1061,14 +1065,13 @@ class Tool( object, Dictifiable ):
     def populate_tool_shed_info( self ):
         if self.repository_id is not None and self.app.name == 'galaxy':
             repository_id = self.app.security.decode_id( self.repository_id )
-            if hasattr(self.app, 'tool_shed_repository_cache'):
-                tool_shed_repository = self.app.tool_shed_repository_cache.get_installed_repository( repository_id=repository_id )
-                if tool_shed_repository:
-                    self.tool_shed = tool_shed_repository.tool_shed
-                    self.repository_name = tool_shed_repository.name
-                    self.repository_owner = tool_shed_repository.owner
-                    self.changeset_revision = tool_shed_repository.changeset_revision
-                    self.installed_changeset_revision = tool_shed_repository.installed_changeset_revision
+            tool_shed_repository = self.app.install_model.context.query( self.app.install_model.ToolShedRepository ).get( repository_id )
+            if tool_shed_repository:
+                self.tool_shed = tool_shed_repository.tool_shed
+                self.repository_name = tool_shed_repository.name
+                self.repository_owner = tool_shed_repository.owner
+                self.changeset_revision = tool_shed_repository.changeset_revision
+                self.installed_changeset_revision = tool_shed_repository.installed_changeset_revision
 
     @property
     def help(self):
@@ -1099,14 +1102,14 @@ class Tool( object, Dictifiable ):
                 # Handle tool help image display for tools that are contained in repositories in the tool shed or installed into Galaxy.
                 try:
                     help_text = tool_shed.util.shed_util_common.set_image_paths( self.app, self.repository_id, help_text )
-                except Exception:
-                    log.exception( "Exception in parse_help, so images may not be properly displayed" )
+                except Exception as e:
+                    log.exception( "Exception in parse_help, so images may not be properly displayed:\n%s" % str( e ) )
             try:
                 self.__help = Template( rst_to_html(help_text), input_encoding='utf-8',
                                         output_encoding='utf-8', default_filters=[ 'decode.utf8' ],
                                         encoding_errors='replace' )
             except:
-                log.exception( "error in help for tool %s", self.name )
+                log.exception( "error in help for tool %s" % self.name )
 
             # Handle deprecated multi-page help text in XML case.
             if hasattr(tool_source, "root"):
@@ -1126,7 +1129,7 @@ class Tool( object, Dictifiable ):
                                                       encoding_errors='replace' )
                                             for x in self.__help_by_page ]
                 except:
-                    log.exception( "error in multi-page help for tool %s", self.name )
+                    log.exception( "error in multi-page help for tool %s" % self.name )
         # Pad out help pages to match npages ... could this be done better?
         while len( self.__help_by_page ) < self.npages:
             self.__help_by_page.append( self.__help )
@@ -1816,7 +1819,7 @@ class Tool( object, Dictifiable ):
                     if 'test_param' in tool_dict:
                         test_param = tool_dict[ 'test_param' ]
                         test_param[ 'value' ] = input.test_param.value_to_basic( group_state.get( test_param[ 'name' ], input.test_param.get_initial_value( request_context, other_values ) ), self.app )
-                        test_param[ 'text_value' ] = input.test_param.value_to_display_text( test_param[ 'value' ] )
+                        test_param[ 'text_value' ] = input.test_param.value_to_display_text( test_param[ 'value' ], self.app )
                         for i in range( len( tool_dict['cases'] ) ):
                             current_state = {}
                             if i == group_state.get( '__current_case__' ):
@@ -1827,11 +1830,9 @@ class Tool( object, Dictifiable ):
                     populate_model( input.inputs, group_state, tool_dict[ 'inputs' ], other_values )
                 else:
                     try:
-                        initial_value = input.get_initial_value( request_context, other_values )
                         tool_dict = input.to_dict( request_context, other_values=other_values )
-                        tool_dict[ 'value' ] = input.value_to_basic( state_inputs.get( input.name, initial_value ), self.app, use_security=True )
-                        tool_dict[ 'default_value' ] = input.value_to_basic( initial_value, self.app, use_security=True )
-                        tool_dict[ 'text_value' ] = input.value_to_display_text( tool_dict[ 'value' ] )
+                        tool_dict[ 'value' ] = input.value_to_basic( state_inputs.get( input.name, input.get_initial_value( request_context, other_values ) ), self.app, use_security=True )
+                        tool_dict[ 'text_value' ] = input.value_to_display_text( tool_dict[ 'value' ], self.app )
                     except Exception as e:
                         tool_dict = input.to_dict( request_context )
                         log.exception('tools::to_json() - Skipping parameter expansion \'%s\': %s.' % ( input.name, e ) )
@@ -2306,10 +2307,9 @@ class DatabaseOperationTool( Tool ):
         for input_dataset in input_datasets.values():
             check_dataset_instance( input_dataset )
 
-        for input_dataset_collection_pairs in input_dataset_collections.values():
-            for input_dataset_collection, is_mapped in input_dataset_collection_pairs:
-                if not input_dataset_collection.collection.populated:
-                    raise ToolInputsNotReadyException()
+        for input_dataset_collection in input_dataset_collections.values():
+            if not input_dataset_collection.collection.populated:
+                raise ToolInputsNotReadyException()
 
             map( check_dataset_instance, input_dataset_collection.dataset_instances )
 
@@ -2506,98 +2506,11 @@ class FlattenTool( DatabaseOperationTool ):
         )
 
 
-class RelabelFromFileTool(DatabaseOperationTool):
-    tool_type = 'relabel_from_file'
-
-    def produce_outputs(self, trans, out_data, output_collections, incoming, history):
-        hdca = incoming["input"]
-        how_type = incoming["how"]["how_select"]
-        new_labels_dataset_assoc = incoming["how"]["labels"]
-        strict = string_as_bool(incoming["how"]["strict"])
-        new_elements = odict()
-
-        def add_copied_value_to_new_elements(new_label, dce_object):
-            new_label = new_label.strip()
-            if new_label in new_elements:
-                raise Exception("New identifier [%s] appears twice in resulting collection, these values must be unique." % new_label)
-            copied_value = dce_object.copy()
-            if getattr(copied_value, "history_content_type", None) == "dataset":
-                history.add_dataset(copied_value, set_hid=False)
-            new_elements[new_label] = copied_value
-
-        new_labels_path = new_labels_dataset_assoc.file_name
-        new_labels = open(new_labels_path, "r").readlines(1024 * 1000000)
-        if strict and len(hdca.collection.elements) != len(new_labels):
-            raise Exception("Relabel mapping file contains incorrect number of identifiers")
-        if how_type == "tabular":
-            # We have a tabular file, where the first column is an existing element identifier,
-            # and the second column is the new element identifier.
-            source_new_label = (line.strip().split('\t') for line in new_labels)
-            new_labels_dict = {source: new_label for source, new_label in source_new_label}
-            for i, dce in enumerate(hdca.collection.elements):
-                dce_object = dce.element_object
-                element_identifier = dce.element_identifier
-                default = element_identifier if strict else None
-                new_label = new_labels_dict.get(element_identifier, default)
-                if not new_label:
-                    raise Exception("Failed to find new label for identifier [%s]" % element_identifier)
-                add_copied_value_to_new_elements(new_label, dce_object)
-        else:
-            # If new_labels_dataset_assoc is not a two-column tabular dataset we label with the current line of the dataset
-            for i, dce in enumerate(hdca.collection.elements):
-                dce_object = dce.element_object
-                add_copied_value_to_new_elements(new_labels[i], dce_object)
-        for key in new_elements.keys():
-            if not re.match("^[\w\-_]+$", key):
-                raise Exception("Invalid new colleciton identifier [%s]" % key)
-        output_collections.create_collection(
-            next(iter(self.outputs.values())), "output", elements=new_elements
-        )
-
-
-class FilterFromFileTool(DatabaseOperationTool):
-    tool_type = 'filter_from_file'
-
-    def produce_outputs(self, trans, out_data, output_collections, incoming, history):
-        hdca = incoming["input"]
-        how_filter = incoming["how"]["how_filter"]
-        filter_dataset_assoc = incoming["how"]["filter_source"]
-        filtered_elements = odict()
-        discarded_elements = odict()
-
-        filtered_path = filter_dataset_assoc.file_name
-        filtered_identifiers_raw = open(filtered_path, "r").readlines(1024 * 1000000)
-        filtered_identifiers = [i.strip() for i in filtered_identifiers_raw]
-
-        # If filtered_dataset_assoc is not a two-column tabular dataset we label with the current line of the dataset
-        for i, dce in enumerate(hdca.collection.elements):
-            dce_object = dce.element_object
-            element_identifier = dce.element_identifier
-            in_filter_file = element_identifier in filtered_identifiers
-            passes_filter = in_filter_file if how_filter == "remove_if_absent" else not in_filter_file
-
-            copied_value = dce_object.copy()
-            if getattr(copied_value, "history_content_type", None) == "dataset":
-                history.add_dataset(copied_value, set_hid=False)
-
-            if passes_filter:
-                filtered_elements[element_identifier] = copied_value
-            else:
-                discarded_elements[element_identifier] = copied_value
-
-        output_collections.create_collection(
-            self.outputs["output_filtered"], "output_filtered", elements=filtered_elements
-        )
-        output_collections.create_collection(
-            self.outputs["output_discarded"], "output_discarded", elements=discarded_elements
-        )
-
-
 # Populate tool_type to ToolClass mappings
 tool_types = {}
 for tool_class in [ Tool, SetMetadataTool, OutputParameterJSONTool,
                     DataManagerTool, DataSourceTool, AsyncDataSourceTool,
-                    UnzipCollectionTool, ZipCollectionTool, MergeCollectionTool, RelabelFromFileTool, FilterFromFileTool,
+                    UnzipCollectionTool, ZipCollectionTool, MergeCollectionTool,
                     DataDestinationTool ]:
     tool_types[ tool_class.tool_type ] = tool_class
 

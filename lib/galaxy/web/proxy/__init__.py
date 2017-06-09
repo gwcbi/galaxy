@@ -47,7 +47,7 @@ class ProxyManager(object):
     def shutdown( self ):
         self.lazy_process.shutdown()
 
-    def setup_proxy( self, trans, host=DEFAULT_PROXY_TO_HOST, port=None, proxy_prefix="", route_name="", container_ids=None, container_interface=None ):
+    def setup_proxy( self, trans, host=DEFAULT_PROXY_TO_HOST, port=None, proxy_prefix="", route_name="", container_ids=None, service_ids=None, docker_command=None ):
         if self.manage_dynamic_proxy:
             log.info("Attempting to start dynamic proxy process")
             log.debug("Cmd: " + ' '.join(self.lazy_process.command_and_args))
@@ -55,6 +55,8 @@ class ProxyManager(object):
 
         if container_ids is None:
             container_ids = []
+        if service_ids is None:
+            service_ids = []
 
         authentication = AuthenticationToken(trans)
         proxy_requests = ProxyRequests(host=host, port=port)
@@ -63,7 +65,8 @@ class ProxyManager(object):
             proxy_requests,
             '/%s' % route_name,
             container_ids,
-            container_interface,
+            service_ids,
+            docker_command,
         )
         # TODO: These shouldn't need to be request.host and request.scheme -
         # though they are reasonable defaults.
@@ -180,7 +183,7 @@ def proxy_ipc(config):
 
 class ProxyIpc(object):
 
-    def handle_requests(self, authentication, proxy_requests, route_name, container_ids, container_interface):
+    def handle_requests(self, authentication, proxy_requests, route_name, container_ids, service_ids, docker_command):
         raise NotImplementedError()
 
     def fetch_requests(self, authentication, key):
@@ -192,7 +195,7 @@ class JsonFileProxyIpc(object):
     def __init__(self, proxy_session_map):
         self.proxy_session_map = proxy_session_map
 
-    def handle_requests(self, authentication, proxy_requests, route_name, container_ids, container_interface):
+    def handle_requests(self, authentication, proxy_requests, route_name, container_ids, service_ids, docker_command):
         key = authentication.cookie_value
         with FileLock( self.proxy_session_map ):
             if not os.path.exists( self.proxy_session_map ):
@@ -203,7 +206,8 @@ class JsonFileProxyIpc(object):
                 'host': proxy_requests.host,
                 'port': proxy_requests.port,
                 'container_ids': container_ids,
-                'container_interface': container_interface,
+                'service_ids': service_ids,
+                'docker_command': docker_command,
             }
             new_json_data = json.dumps( session_map )
             open( self.proxy_session_map, "w" ).write( new_json_data )
@@ -218,7 +222,8 @@ class JsonFileProxyIpc(object):
                     host=m['host'],
                     port=m['port'],
                     container_ids=m['container_ids'],
-                    container_interface=m['container_interface'],
+                    service_ids=m['service_ids'],
+                    docker_command=m['docker_command'],
                 )
         except (TypeError, KeyError):
             log.warning('fetch_requests(): invalid key: %s', key)
@@ -230,7 +235,7 @@ class SqliteProxyIpc(object):
     def __init__(self, proxy_session_map):
         self.proxy_session_map = proxy_session_map
 
-    def handle_requests(self, authentication, proxy_requests, route_name, container_ids, container_interface):
+    def handle_requests(self, authentication, proxy_requests, route_name, container_ids, service_ids, docker_command):
         key = authentication.cookie_value
         with FileLock( self.proxy_session_map ):
             conn = sqlite.connect(self.proxy_session_map)
@@ -243,20 +248,22 @@ class SqliteProxyIpc(object):
                                   host text,
                                   port integer,
                                   container_ids text,
-                                  container_interface text)''')
+                                  service_ids text,
+                                  docker_command text)''')
                 except Exception:
                     pass
                 delete = '''DELETE FROM gxproxy2 WHERE key=?'''
                 c.execute(delete, (key,))
                 insert = '''INSERT INTO gxproxy2
-                            (key, host, port, container_ids, container_interface)
-                            VALUES (?, ?, ?, ?, ?)'''
+                            (key, host, port, container_ids, service_ids, docker_command)
+                            VALUES (?, ?, ?, ?, ?, ?)'''
                 c.execute(insert,
                           (key,
                            proxy_requests.host,
                            proxy_requests.port,
                            json.dumps(container_ids),
-                           container_interface))
+                           json.dumps(service_ids),
+                           docker_command))
                 conn.commit()
             finally:
                 conn.close()
@@ -267,12 +274,12 @@ class SqliteProxyIpc(object):
             conn = sqlite.connect(self.proxy_session_map)
             try:
                 c = conn.cursor()
-                select = '''SELECT host, port, container_ids, container_interface
+                select = '''SELECT host, port, container_ids, service_ids, docker_command
                             FROM gxproxy2
                             WHERE key=?'''
                 c.execute(select, (key,))
                 try:
-                    host, port, container_ids, container_interface = c.fetchone()
+                    host, port, container_ids, service_ids, docker_command = c.fetchone()
                 except TypeError:
                     log.warning('fetch_requests(): invalid key: %s', key)
                     return None
@@ -280,7 +287,8 @@ class SqliteProxyIpc(object):
                     host=host,
                     port=port,
                     container_ids=json.loads(container_ids),
-                    container_interface=container_interface)
+                    service_ids=json.loads(service_ids),
+                    docker_command=docker_command)
             finally:
                 conn.close()
 
@@ -291,7 +299,7 @@ class RestGolangProxyIpc(object):
         self.config = config
         self.api_url = 'http://127.0.0.1:%s/api?api_key=%s' % (self.config.dynamic_proxy_bind_port, self.config.dynamic_proxy_golang_api_key)
 
-    def handle_requests(self, authentication, proxy_requests, route_name, container_ids, container_interface, sleep=1):
+    def handle_requests(self, authentication, proxy_requests, route_name, container_ids, service_ids, docker_command, sleep=1):
         """Make a POST request to the GO proxy to register a route
         """
         values = {
@@ -318,7 +326,7 @@ class RestGolangProxyIpc(object):
         pass
 
 
-ProxyMapping = namedtuple('ProxyMapping', ['host', 'port', 'container_ids', 'container_interface'])
+ProxyMapping = namedtuple('ProxyMapping', ['host', 'port', 'container_ids', 'service_ids', 'docker_command'])
 
 
 # TODO: MQ diven proxy?

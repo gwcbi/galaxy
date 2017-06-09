@@ -38,15 +38,16 @@ class ConfigSerializer( base.ModelSerializer ):
             'brand'                             : _defaults_to( '' ),
             # TODO: this doesn't seem right
             'logo_url'                          : lambda i, k, **c: self.url_for( i.get( k, '/' ) ),
-            'logo_src'                          : lambda i, k, **c: self.url_for( '/static/images/galaxyIcon_noText.png' ),
+            'logo_src'                          : lambda i, k, **c: self.url_for( '/static/images/galaxyIcon.png' ),
             'terms_url'                         : _defaults_to( '' ),
 
-            'wiki_url'                          : _defaults_to( self.app.config.wiki_url ),
-            'search_url'                        : _defaults_to( self.app.config.wiki_url.rstrip("/") + "/search/" ),
-            'mailing_lists'                     : _defaults_to( self.app.config.wiki_url.rstrip("/") + "/mailing-lists/"),
+            # TODO: don't hardcode here - hardcode defaults once in config.py
+            'wiki_url'                          : _defaults_to( "http://galaxyproject.org/" ),
+            'search_url'                        : _defaults_to( "http://galaxyproject.org/search/usegalaxy/" ),
+            'mailing_lists'                     : _defaults_to( "https://wiki.galaxyproject.org/MailingLists" ),
             'screencasts_url'                   : _defaults_to( "https://vimeo.com/galaxyproject" ),
-            'citation_url'                      : _defaults_to( self.app.config.citation_url ),
-            'support_url'                       : _defaults_to( self.app.config.support_url ),
+            'citation_url'                      : _defaults_to( "https://wiki.galaxyproject.org/CitingGalaxy" ),
+            'support_url'                       : _defaults_to( "https://wiki.galaxyproject.org/Support" ),
             'lims_doc_url'                      : _defaults_to( "https://usegalaxy.org/u/rkchak/p/sts" ),
             'biostar_url'                       : _defaults_to( '' ),
             'biostar_url_redirect'              : lambda *a, **c: self.url_for( controller='biostar', action='biostar_redirect', qualified=True ),

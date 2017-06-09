@@ -10,4 +10,3 @@ Special Topics
    grt
    chat
    webhooks
-   performance_tracking

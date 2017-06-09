@@ -115,13 +115,13 @@
                     if qa_url:
                         menu_options = [ [_('Galaxy Q&A'), qa_url, "_blank" ] ]
                     menu_options.extend( [
-                        [_('Tool Shed Wiki'), app.config.get( "wiki_url", "https://galaxyproject.org/toolshed" ), "_blank" ],
-                        [_('Support'), app.config.get( "support_url", "https://galaxyproject.org/support" ), "_blank" ],
-                        [_('Search'), app.config.get( "search_url", "http://galaxyproject.org/search/" ), "_blank" ],
-                        [_('Mailing Lists'), app.config.get( "mailing_lists_url", "https://galaxyproject.org/mailing-lists" ), "_blank" ],
+                        [_('Tool Shed Wiki'), app.config.get( "wiki_url", "https://wiki.galaxyproject.org/ToolShed" ), "_blank" ],
+                        [_('Support'), app.config.get( "support_url", "https://wiki.galaxyproject.org/Support" ), "_blank" ],
+                        [_('Search'), app.config.get( "search_url", "http://galaxyproject.org/search/usegalaxy/" ), "_blank" ],
+                        [_('Mailing Lists'), app.config.get( "mailing_lists_url", "https://wiki.galaxyproject.org/MailingLists" ), "_blank" ],
                         [_('Videos'), app.config.get( "screencasts_url", "https://vimeo.com/galaxyproject" ), "_blank" ],
                         [_('Wiki'), app.config.get( "wiki_url", "http://galaxyproject.org/" ), "_blank" ],
-                        [_('How to Cite Galaxy'), app.config.get( "citation_url", "https://galaxyproject.org/citing-galaxy" ), "_blank" ]
+                        [_('How to Cite Galaxy'), app.config.get( "citation_url", "https://wiki.galaxyproject.org/CitingGalaxy" ), "_blank" ]
                     ] )
                     tab( "help", _("Help"), None, menu_options=menu_options )
                 %>
@@ -165,7 +165,7 @@
     ## Logo, layered over tabs to be clickable
     <div class="navbar-brand">
         <a href="${h.url_for( app.config.get( 'logo_url', '/' ) )}">
-        <img style="margin-left: 0.35em;" border="0" src="${h.url_for('/static/images/galaxyIcon_noText.png')}">
+        <img style="margin-left: 0.35em;" border="0" src="${h.url_for('/static/images/galaxyIcon.png')}">
         Galaxy Tool Shed
         %if app.config.brand:
             <span>/ ${app.config.brand}</span>

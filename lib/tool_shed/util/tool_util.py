@@ -272,3 +272,8 @@ def panel_entry_per_tool( tool_section_dict ):
         if k not in [ 'id', 'version', 'name' ]:
             return True
     return False
+
+
+def reload_upload_tools( app ):
+    if hasattr( app, 'toolbox' ):
+        app.toolbox.handle_datatypes_changed()

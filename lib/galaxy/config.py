@@ -21,9 +21,7 @@ from datetime import timedelta
 from six import string_types
 from six.moves import configparser
 
-from galaxy.containers import parse_containers_config
 from galaxy.exceptions import ConfigurationError
-from galaxy.util import ExecutionTimer
 from galaxy.util import listify
 from galaxy.util import string_as_bool
 from galaxy.util.dbkeys import GenomeBuilds
@@ -54,7 +52,7 @@ PATH_DEFAULTS = dict(
     workflow_schedulers_config_file=['config/workflow_schedulers_conf.xml', 'config/workflow_schedulers_conf.xml.sample'],
     modules_mapping_files=['config/environment_modules_mapping.yml', 'config/environment_modules_mapping.yml.sample'],
     local_conda_mapping_file=['config/local_conda_mapping.yml', 'config/local_conda_mapping.yml.sample'],
-    containers_config_file=['config/containers_conf.yml'],
+    swarm_manager_config_file=['config/swarm_manager_conf.yml', 'config/swarm_manager_conf.yml.sample'],
 )
 
 PATH_LIST_DEFAULTS = dict(
@@ -319,8 +317,6 @@ class Configuration( object ):
         # These are not even beta - just experiments - don't use them unless
         # you want yours tools to be broken in the future.
         self.enable_beta_tool_formats = string_as_bool( kwargs.get( 'enable_beta_tool_formats', 'False' ) )
-        # Beta containers interface used by GIEs
-        self.enable_beta_containers_interface = string_as_bool( kwargs.get( 'enable_beta_containers_interface', 'False' ) )
 
         # Certain modules such as the pause module will automatically cause
         # workflows to be scheduled in job handlers the way all workflows will
@@ -370,9 +366,8 @@ class Configuration( object ):
         self.message_box_visible = string_as_bool( kwargs.get( 'message_box_visible', False ) )
         self.message_box_content = kwargs.get( 'message_box_content', None )
         self.message_box_class = kwargs.get( 'message_box_class', 'info' )
-        self.support_url = kwargs.get( 'support_url', 'https://galaxyproject.org/support' )
-        self.citation_url = kwargs.get( 'citation_url', 'https://galaxyproject.org/citing-galaxy' )
-        self.wiki_url = kwargs.get( 'wiki_url', 'https://galaxyproject.org/' )
+        self.support_url = kwargs.get( 'support_url', 'https://wiki.galaxyproject.org/Support' )
+        self.wiki_url = kwargs.get( 'wiki_url', 'https://wiki.galaxyproject.org/' )
         self.blog_url = kwargs.get( 'blog_url', None )
         self.screencasts_url = kwargs.get( 'screencasts_url', None )
         self.library_import_dir = kwargs.get( 'library_import_dir', None )
@@ -571,10 +566,6 @@ class Configuration( object ):
         self.statsd_host = kwargs.get( 'statsd_host', '')
         self.statsd_port = int( kwargs.get( 'statsd_port', 8125 ) )
         self.statsd_prefix = kwargs.get( 'statsd_prefix', 'galaxy' )
-        # Statistics and profiling with graphite
-        self.graphite_host = kwargs.get( 'graphite_host', '')
-        self.graphite_port = int( kwargs.get( 'graphite_port', 2003 ) )
-        self.graphite_prefix = kwargs.get( 'graphite_prefix', 'galaxy' )
         # Logging with fluentd
         self.fluent_log = string_as_bool( kwargs.get( 'fluent_log', False ) )
         self.fluent_host = kwargs.get( 'fluent_host', 'localhost' )
@@ -611,8 +602,6 @@ class Configuration( object ):
         self.citation_cache_type = kwargs.get( "citation_cache_type", "file" )
         self.citation_cache_data_dir = self.resolve_path( kwargs.get( "citation_cache_data_dir", "database/citations/data" ) )
         self.citation_cache_lock_dir = self.resolve_path( kwargs.get( "citation_cache_lock_dir", "database/citations/locks" ) )
-
-        self.containers_conf = parse_containers_config(self.containers_config_file)
 
     @property
     def sentry_dsn_public( self ):
@@ -909,20 +898,19 @@ class ConfiguresGalaxyMixin:
         self.genome_builds = GenomeBuilds( self, data_table_name=data_table_name, load_old_style=load_old_style )
 
     def wait_for_toolbox_reload(self, old_toolbox):
-        timer = ExecutionTimer()
         while True:
             # Wait till toolbox reload has been triggered
-            # (or more than 60 seconds have passed)
-            if self.toolbox.has_reloaded(old_toolbox) or timer.elapsed > 60:
+            # and make sure toolbox has finished reloading)
+            if self.toolbox.has_reloaded(old_toolbox):
                 break
-            time.sleep(0.1)
+
+            time.sleep(1)
 
     def _configure_toolbox( self ):
         from galaxy import tools
         from galaxy.managers.citations import CitationsManager
         from galaxy.tools.deps import containers
         from galaxy.tools.toolbox.lineages.tool_shed import ToolVersionCache
-        import galaxy.tools.search
 
         self.citations_manager = CitationsManager( self )
         self.tool_version_cache = ToolVersionCache(self)
@@ -933,6 +921,8 @@ class ConfiguresGalaxyMixin:
         if self.config.migrated_tools_config not in tool_configs:
             tool_configs.append( self.config.migrated_tools_config )
         self.toolbox = tools.ToolBox( tool_configs, self.config.tool_path, self )
+        self.reindex_tool_search()
+
         galaxy_root_dir = os.path.abspath(self.config.root)
         file_path = os.path.abspath(getattr(self.config, "file_path"))
         app_info = containers.AppInfo(
@@ -947,14 +937,14 @@ class ConfiguresGalaxyMixin:
             involucro_auto_init=self.config.involucro_auto_init,
         )
         self.container_finder = containers.ContainerFinder(app_info)
-        index_help = getattr(self.config, "index_tool_help", True)
-        self.toolbox_search = galaxy.tools.search.ToolBoxSearch(self.toolbox, index_help)
-        self.reindex_tool_search()
 
-    def reindex_tool_search( self ):
+    def reindex_tool_search( self, toolbox=None ):
         # Call this when tools are added or removed.
-        self.toolbox_search.build_index(tool_cache=self.tool_cache)
-        self.tool_cache.reset_status()
+        import galaxy.tools.search
+        index_help = getattr( self.config, "index_tool_help", True )
+        if not toolbox:
+            toolbox = self.toolbox
+        self.toolbox_search = galaxy.tools.search.ToolBoxSearch( toolbox, index_help )
 
     def _configure_tool_data_tables( self, from_shed_config ):
         from galaxy.tools.data import ToolDataTableManager
