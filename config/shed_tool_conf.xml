@@ -1,0 +1,256 @@
+<?xml version="1.0"?>
+<toolbox tool_path="../shed_tools">
+<section id="ngs_mapping" name="NGS: Mapping" version="">
+  <tool file="toolshed.g2.bx.psu.edu/repos/rnateam/mafft/15974dd17515/mafft/mafft.xml" guid="toolshed.g2.bx.psu.edu/repos/rnateam/mafft/rbc_mafft/7.221.3">
+      <tool_shed>toolshed.g2.bx.psu.edu</tool_shed>
+        <repository_name>mafft</repository_name>
+        <repository_owner>rnateam</repository_owner>
+        <installed_changeset_revision>15974dd17515</installed_changeset_revision>
+        <id>toolshed.g2.bx.psu.edu/repos/rnateam/mafft/rbc_mafft/7.221.3</id>
+        <version>7.221.3</version>
+    </tool>
+</section>
+
+<section id="ngs_mapping" name="NGS: Mapping" version="">
+  <tool file="toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/8ccbdbe9a695/bowtie2/bowtie2_wrapper.xml" guid="toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.3.2.2">
+      <tool_shed>toolshed.g2.bx.psu.edu</tool_shed>
+        <repository_name>bowtie2</repository_name>
+        <repository_owner>devteam</repository_owner>
+        <installed_changeset_revision>8ccbdbe9a695</installed_changeset_revision>
+        <id>toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.3.2.2</id>
+        <version>2.3.2.2</version>
+    </tool>
+</section>
+
+<section id="phylogenetics" name="Phylogenetics" version="">
+  <tool file="toolshed.g2.bx.psu.edu/repos/iuc/raxml/6805e85573b8/raxml/raxml.xml" guid="toolshed.g2.bx.psu.edu/repos/iuc/raxml/raxml/1.0.2">
+      <tool_shed>toolshed.g2.bx.psu.edu</tool_shed>
+        <repository_name>raxml</repository_name>
+        <repository_owner>iuc</repository_owner>
+        <installed_changeset_revision>6805e85573b8</installed_changeset_revision>
+        <id>toolshed.g2.bx.psu.edu/repos/iuc/raxml/raxml/1.0.2</id>
+        <version>1.0.2</version>
+    </tool>
+</section>
+
+<section id="metagenomics" name="Metagenomics" version="">
+  <tool file="toolshed.g2.bx.psu.edu/repos/jasper/pathoscope_id/15f6593183bb/pathoscope_id/PathoID.xml" guid="toolshed.g2.bx.psu.edu/repos/jasper/pathoscope_id/pathoscope_id/0.1.0">
+      <tool_shed>toolshed.g2.bx.psu.edu</tool_shed>
+        <repository_name>pathoscope_id</repository_name>
+        <repository_owner>jasper</repository_owner>
+        <installed_changeset_revision>15f6593183bb</installed_changeset_revision>
+        <id>toolshed.g2.bx.psu.edu/repos/jasper/pathoscope_id/pathoscope_id/0.1.0</id>
+        <version>0.1.0</version>
+    </tool>
+</section>
+
+<section id="metagenomics" name="Metagenomics" version="">
+  <tool file="toolshed.g2.bx.psu.edu/repos/jasper/pathoscope_map/94d7100ad5d0/pathoscope_map/PathoMap.xml" guid="toolshed.g2.bx.psu.edu/repos/jasper/pathoscope_map/pathoscope_map/0.1.0">
+      <tool_shed>toolshed.g2.bx.psu.edu</tool_shed>
+        <repository_name>pathoscope_map</repository_name>
+        <repository_owner>jasper</repository_owner>
+        <installed_changeset_revision>94d7100ad5d0</installed_changeset_revision>
+        <id>toolshed.g2.bx.psu.edu/repos/jasper/pathoscope_map/pathoscope_map/0.1.0</id>
+        <version>0.1.0</version>
+    </tool>
+</section>
+
+<section id="cshl_library_information" name="NGS: QC and manipulation" version="">
+  <tool file="toolshed.g2.bx.psu.edu/repos/pjbriggs/trimmomatic/6eeacf19a38e/trimmomatic/trimmomatic.xml" guid="toolshed.g2.bx.psu.edu/repos/pjbriggs/trimmomatic/trimmomatic/0.36.3">
+      <tool_shed>toolshed.g2.bx.psu.edu</tool_shed>
+        <repository_name>trimmomatic</repository_name>
+        <repository_owner>pjbriggs</repository_owner>
+        <installed_changeset_revision>6eeacf19a38e</installed_changeset_revision>
+        <id>toolshed.g2.bx.psu.edu/repos/pjbriggs/trimmomatic/trimmomatic/0.36.3</id>
+        <version>0.36.3</version>
+    </tool>
+</section>
+
+<section id="proteomics" name="Proteomics" version="">
+  <tool file="toolshed.g2.bx.psu.edu/repos/jasper/dna_protein_transle/2513dbc3385d/dna_protein_transle/translate.xml" guid="toolshed.g2.bx.psu.edu/repos/jasper/dna_protein_transle/dna_protein_transle/1.0">
+      <tool_shed>toolshed.g2.bx.psu.edu</tool_shed>
+        <repository_name>dna_protein_transle</repository_name>
+        <repository_owner>jasper</repository_owner>
+        <installed_changeset_revision>2513dbc3385d</installed_changeset_revision>
+        <id>toolshed.g2.bx.psu.edu/repos/jasper/dna_protein_transle/dna_protein_transle/1.0</id>
+        <version>1.0</version>
+    </tool>
+</section>
+
+<section id="phylogenetics" name="Phylogenetics" version="">
+  <tool file="toolshed.g2.bx.psu.edu/repos/jasper/cluster_picker/597bff809239/cluster_picker/cluster_picker-661b74ba4cc8/cluster-picker.xml" guid="toolshed.g2.bx.psu.edu/repos/jasper/cluster_picker/cluster-pick/1.2.3">
+      <tool_shed>toolshed.g2.bx.psu.edu</tool_shed>
+        <repository_name>cluster_picker</repository_name>
+        <repository_owner>jasper</repository_owner>
+        <installed_changeset_revision>597bff809239</installed_changeset_revision>
+        <id>toolshed.g2.bx.psu.edu/repos/jasper/cluster_picker/cluster-pick/1.2.3</id>
+        <version>1.2.3</version>
+    </tool>
+</section>
+
+<section id="samtools" name="NGS: SAM Tools" version="">
+  <tool file="toolshed.g2.bx.psu.edu/repos/devteam/bam_to_sam/af7c50162f0b/bam_to_sam/bam_to_sam.xml" guid="toolshed.g2.bx.psu.edu/repos/devteam/bam_to_sam/bam_to_sam/2.0">
+      <tool_shed>toolshed.g2.bx.psu.edu</tool_shed>
+        <repository_name>bam_to_sam</repository_name>
+        <repository_owner>devteam</repository_owner>
+        <installed_changeset_revision>af7c50162f0b</installed_changeset_revision>
+        <id>toolshed.g2.bx.psu.edu/repos/devteam/bam_to_sam/bam_to_sam/2.0</id>
+        <version>2.0</version>
+    </tool>
+</section>
+
+<section id="samtools" name="NGS: SAM Tools" version="">
+  <tool file="toolshed.g2.bx.psu.edu/repos/devteam/sam_to_bam/d04d9f1c6791/sam_to_bam/sam_to_bam.xml" guid="toolshed.g2.bx.psu.edu/repos/devteam/sam_to_bam/sam_to_bam/2.0">
+      <tool_shed>toolshed.g2.bx.psu.edu</tool_shed>
+        <repository_name>sam_to_bam</repository_name>
+        <repository_owner>devteam</repository_owner>
+        <installed_changeset_revision>d04d9f1c6791</installed_changeset_revision>
+        <id>toolshed.g2.bx.psu.edu/repos/devteam/sam_to_bam/sam_to_bam/2.0</id>
+        <version>2.0</version>
+    </tool>
+</section>
+
+<section id="samtools" name="NGS: SAM Tools" version="">
+  <tool file="toolshed.g2.bx.psu.edu/repos/devteam/samtools_bedcov/8c3472790020/samtools_bedcov/samtools_bedcov.xml" guid="toolshed.g2.bx.psu.edu/repos/devteam/samtools_bedcov/samtools_bedcov/2.0">
+      <tool_shed>toolshed.g2.bx.psu.edu</tool_shed>
+        <repository_name>samtools_bedcov</repository_name>
+        <repository_owner>devteam</repository_owner>
+        <installed_changeset_revision>8c3472790020</installed_changeset_revision>
+        <id>toolshed.g2.bx.psu.edu/repos/devteam/samtools_bedcov/samtools_bedcov/2.0</id>
+        <version>2.0</version>
+    </tool>
+</section>
+
+<section id="samtools" name="NGS: SAM Tools" version="">
+  <tool file="toolshed.g2.bx.psu.edu/repos/devteam/samtools_calmd/1ebb4ecdc1ef/samtools_calmd/samtools_calmd.xml" guid="toolshed.g2.bx.psu.edu/repos/devteam/samtools_calmd/samtools_calmd/2.0">
+      <tool_shed>toolshed.g2.bx.psu.edu</tool_shed>
+        <repository_name>samtools_calmd</repository_name>
+        <repository_owner>devteam</repository_owner>
+        <installed_changeset_revision>1ebb4ecdc1ef</installed_changeset_revision>
+        <id>toolshed.g2.bx.psu.edu/repos/devteam/samtools_calmd/samtools_calmd/2.0</id>
+        <version>2.0</version>
+    </tool>
+</section>
+
+<section id="samtools" name="NGS: SAM Tools" version="">
+  <tool file="toolshed.g2.bx.psu.edu/repos/devteam/samtools_flagstat/0072bf593791/samtools_flagstat/samtools_flagstat.xml" guid="toolshed.g2.bx.psu.edu/repos/devteam/samtools_flagstat/samtools_flagstat/2.0">
+      <tool_shed>toolshed.g2.bx.psu.edu</tool_shed>
+        <repository_name>samtools_flagstat</repository_name>
+        <repository_owner>devteam</repository_owner>
+        <installed_changeset_revision>0072bf593791</installed_changeset_revision>
+        <id>toolshed.g2.bx.psu.edu/repos/devteam/samtools_flagstat/samtools_flagstat/2.0</id>
+        <version>2.0</version>
+    </tool>
+</section>
+
+<section id="samtools" name="NGS: SAM Tools" version="">
+  <tool file="toolshed.g2.bx.psu.edu/repos/devteam/samtools_idxstats/87398ae795c7/samtools_idxstats/samtools_idxstats.xml" guid="toolshed.g2.bx.psu.edu/repos/devteam/samtools_idxstats/samtools_idxstats/2.0">
+      <tool_shed>toolshed.g2.bx.psu.edu</tool_shed>
+        <repository_name>samtools_idxstats</repository_name>
+        <repository_owner>devteam</repository_owner>
+        <installed_changeset_revision>87398ae795c7</installed_changeset_revision>
+        <id>toolshed.g2.bx.psu.edu/repos/devteam/samtools_idxstats/samtools_idxstats/2.0</id>
+        <version>2.0</version>
+    </tool>
+</section>
+
+<section id="samtools" name="NGS: SAM Tools" version="">
+  <tool file="toolshed.g2.bx.psu.edu/repos/devteam/samtools_mpileup/aa0ef6f0ee89/samtools_mpileup/samtools_mpileup.xml" guid="toolshed.g2.bx.psu.edu/repos/devteam/samtools_mpileup/samtools_mpileup/2.0">
+      <tool_shed>toolshed.g2.bx.psu.edu</tool_shed>
+        <repository_name>samtools_mpileup</repository_name>
+        <repository_owner>devteam</repository_owner>
+        <installed_changeset_revision>aa0ef6f0ee89</installed_changeset_revision>
+        <id>toolshed.g2.bx.psu.edu/repos/devteam/samtools_mpileup/samtools_mpileup/2.0</id>
+        <version>2.0</version>
+    </tool>
+</section>
+
+<section id="samtools" name="NGS: SAM Tools" version="">
+  <tool file="toolshed.g2.bx.psu.edu/repos/devteam/samtools_reheader/020e144b5f78/samtools_reheader/samtools_reheader.xml" guid="toolshed.g2.bx.psu.edu/repos/devteam/samtools_reheader/samtools_reheader/2.0">
+      <tool_shed>toolshed.g2.bx.psu.edu</tool_shed>
+        <repository_name>samtools_reheader</repository_name>
+        <repository_owner>devteam</repository_owner>
+        <installed_changeset_revision>020e144b5f78</installed_changeset_revision>
+        <id>toolshed.g2.bx.psu.edu/repos/devteam/samtools_reheader/samtools_reheader/2.0</id>
+        <version>2.0</version>
+    </tool>
+</section>
+
+<section id="samtools" name="NGS: SAM Tools" version="">
+  <tool file="toolshed.g2.bx.psu.edu/repos/devteam/samtools_stats/8cfc17e27132/samtools_stats/samtools_stats.xml" guid="toolshed.g2.bx.psu.edu/repos/devteam/samtools_stats/samtools_stats/2.0">
+      <tool_shed>toolshed.g2.bx.psu.edu</tool_shed>
+        <repository_name>samtools_stats</repository_name>
+        <repository_owner>devteam</repository_owner>
+        <installed_changeset_revision>8cfc17e27132</installed_changeset_revision>
+        <id>toolshed.g2.bx.psu.edu/repos/devteam/samtools_stats/samtools_stats/2.0</id>
+        <version>2.0</version>
+    </tool>
+</section>
+
+<section id="samtools" name="NGS: SAM Tools" version="">
+  <tool file="toolshed.g2.bx.psu.edu/repos/devteam/samtools_split/57f3e32f809d/samtools_split/samtools_split.xml" guid="toolshed.g2.bx.psu.edu/repos/devteam/samtools_split/samtools_split/1.1">
+      <tool_shed>toolshed.g2.bx.psu.edu</tool_shed>
+        <repository_name>samtools_split</repository_name>
+        <repository_owner>devteam</repository_owner>
+        <installed_changeset_revision>57f3e32f809d</installed_changeset_revision>
+        <id>toolshed.g2.bx.psu.edu/repos/devteam/samtools_split/samtools_split/1.1</id>
+        <version>1.1</version>
+    </tool>
+</section>
+
+<section id="samtools" name="NGS: SAM Tools" version="">
+  <tool file="toolshed.g2.bx.psu.edu/repos/devteam/samtools_sort/a430da4f04cd/samtools_sort/samtools_sort.xml" guid="toolshed.g2.bx.psu.edu/repos/devteam/samtools_sort/samtools_sort/2.0">
+      <tool_shed>toolshed.g2.bx.psu.edu</tool_shed>
+        <repository_name>samtools_sort</repository_name>
+        <repository_owner>devteam</repository_owner>
+        <installed_changeset_revision>a430da4f04cd</installed_changeset_revision>
+        <id>toolshed.g2.bx.psu.edu/repos/devteam/samtools_sort/samtools_sort/2.0</id>
+        <version>2.0</version>
+    </tool>
+</section>
+
+<section id="samtools" name="NGS: SAM Tools" version="">
+  <tool file="toolshed.g2.bx.psu.edu/repos/devteam/samtools_slice_bam/2b474ebbfc7d/samtools_slice_bam/samtools_slice_bam.xml" guid="toolshed.g2.bx.psu.edu/repos/devteam/samtools_slice_bam/samtools_slice_bam/2.0">
+      <tool_shed>toolshed.g2.bx.psu.edu</tool_shed>
+        <repository_name>samtools_slice_bam</repository_name>
+        <repository_owner>devteam</repository_owner>
+        <installed_changeset_revision>2b474ebbfc7d</installed_changeset_revision>
+        <id>toolshed.g2.bx.psu.edu/repos/devteam/samtools_slice_bam/samtools_slice_bam/2.0</id>
+        <version>2.0</version>
+    </tool>
+</section>
+
+<section id="samtools" name="NGS: SAM Tools" version="">
+  <tool file="toolshed.g2.bx.psu.edu/repos/devteam/samtools_rmdup/3735f950b2f5/samtools_rmdup/samtools_rmdup.xml" guid="toolshed.g2.bx.psu.edu/repos/devteam/samtools_rmdup/samtools_rmdup/2.0">
+      <tool_shed>toolshed.g2.bx.psu.edu</tool_shed>
+        <repository_name>samtools_rmdup</repository_name>
+        <repository_owner>devteam</repository_owner>
+        <installed_changeset_revision>3735f950b2f5</installed_changeset_revision>
+        <id>toolshed.g2.bx.psu.edu/repos/devteam/samtools_rmdup/samtools_rmdup/2.0</id>
+        <version>2.0</version>
+    </tool>
+</section>
+
+<section id="ngs_mapping" name="NGS: Mapping" version="">
+  <tool file="toolshed.g2.bx.psu.edu/repos/peterjc/align_back_trans/2c32e8a8990f/align_back_trans/tools/align_back_trans/align_back_trans.xml" guid="toolshed.g2.bx.psu.edu/repos/peterjc/align_back_trans/align_back_trans/0.0.9">
+      <tool_shed>toolshed.g2.bx.psu.edu</tool_shed>
+        <repository_name>align_back_trans</repository_name>
+        <repository_owner>peterjc</repository_owner>
+        <installed_changeset_revision>2c32e8a8990f</installed_changeset_revision>
+        <id>toolshed.g2.bx.psu.edu/repos/peterjc/align_back_trans/align_back_trans/0.0.9</id>
+        <version>0.0.9</version>
+    </tool>
+</section>
+
+<section id="cshl_library_information" name="NGS: QC and manipulation" version="">
+  <tool file="toolshed.g2.bx.psu.edu/repos/iuc/prinseq/02befcb391f5/prinseq/prinseq.xml" guid="toolshed.g2.bx.psu.edu/repos/iuc/prinseq/prinseq/0.20.4">
+      <tool_shed>toolshed.g2.bx.psu.edu</tool_shed>
+        <repository_name>prinseq</repository_name>
+        <repository_owner>iuc</repository_owner>
+        <installed_changeset_revision>02befcb391f5</installed_changeset_revision>
+        <id>toolshed.g2.bx.psu.edu/repos/iuc/prinseq/prinseq/0.20.4</id>
+        <version>0.20.4</version>
+    </tool>
+</section>
+
+</toolbox>
